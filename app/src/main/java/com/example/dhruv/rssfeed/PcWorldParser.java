@@ -25,7 +25,8 @@ class PcWorldRssParser {
             parser.setInput(inputStream, null);
             parser.nextTag();
             return readFeed(parser);
-        } finally {
+        }
+        finally {
             inputStream.close();
         }
     }

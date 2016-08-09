@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import java.util.List;
  */
 public class RssFragment extends Fragment implements AdapterView.OnItemClickListener {
 
+    private static final String TAG = "MainAct";
     private ProgressBar progressBar;
     private ListView listView;
     private View view;
@@ -29,10 +31,15 @@ public class RssFragment extends Fragment implements AdapterView.OnItemClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        MainActivity mnAc = new MainActivity();
+        String type = mnAc.passType();
+        Log.d(TAG, "type: " + type);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_layout, container, false);
             progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -59,10 +66,13 @@ public class RssFragment extends Fragment implements AdapterView.OnItemClickList
      * Once the {@link RssService} finishes its task, the result is sent to this ResultReceiver.
      */
     private final ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
+
         @SuppressWarnings("unchecked")
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
+
             List<RssItem> items = (List<RssItem>) resultData.getSerializable(RssService.ITEMS);
+
             if (items != null) {
                 RssAdapter adapter = new RssAdapter(getActivity(), items);
                 listView.setAdapter(adapter);
@@ -72,15 +82,20 @@ public class RssFragment extends Fragment implements AdapterView.OnItemClickList
             }
             progressBar.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
-        };
+        }
+
     };
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
         RssAdapter adapter = (RssAdapter) parent.getAdapter();
         RssItem item = (RssItem) adapter.getItem(position);
         Uri uri = Uri.parse(item.getLink());
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+        Log.d(TAG,"uri: "+uri);
+        Intent i = new Intent(RssFragment.super.getActivity(), FullArticle.class);
+        i.putExtra("url",uri);
+
+        startActivity(i);
     }
 }

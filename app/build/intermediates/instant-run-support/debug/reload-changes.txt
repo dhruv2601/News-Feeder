@@ -1,2 +1,0 @@
-CHANGED,/home/dhruv/AndroidStudioProjects/SimpleRssReader/RssFeed/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/com/example/dhruv/rssfeed/RssService$override.class
-CHANGED,/home/dhruv/AndroidStudioProjects/SimpleRssReader/RssFeed/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/com/android/tools/fd/runtime/AppPatchesLoaderImpl.class

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,25 +21,27 @@ import java.util.List;
  */
 public class RssService extends IntentService {
 
-    public static final String TAG = "RssServvice";
+    public static final String TAG = "RssService";
 
-/////////////           INDIA          //////////////
 
-//    public static final String RSS_LINK = "http://timesofindia.indiatimes.com/rssfeeds/-2128839596.cms";   //TOI (remember videos too)
-//    public static final String RSS_LINK = "http://economictimes.indiatimes.com/rss.cms";  //ECONOMIC TIMES
-    public static final String RSS_LINK = "http://www.thehindu.com/navigation/?type=rss"; //THE HINDU
+    public String[] topStories = new String[]
+            {
+                    "http://www.thehindu.com/?service=rss",
+                    "http://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+                    "http://feeds.abcnews.com/abcnews/topstories",
+                    "http://rss.nytimes.com/services/xml/rss/nyt/AsiaPacific.xml",
+                    "http://economictimes.indiatimes.com/rssfeedstopstories.cms",
+                    "http://indiatoday.intoday.in/rss/article.jsp?sid=36"
+            };
 
-/////////////    ANGREZZI     /////////////////
+    public String sports[] = new String[]
+            {
+                    "http://timesofindia.indiatimes.com/rssfeeds/4719148.cms",
+                    "http://www.mirror.co.uk/sport/football/rss.xml",  // football with love
+                    "http://indiatoday.intoday.in/rss/article.jsp?sid=41",
+                    "http://www.espncricinfo.com/rss/content/story/feeds/6.xml"
+            };
 
-//    public static final String RSS_LINK = "http://www.nytimes.com/services/xml/rss/index.html";   //NYtimes ye best hai iski sare categ include kr lio
-//    private static final String RSS_LINK = "http://www.pcworld.com/index.rss";
-//    private static final String RSS_LINK = "http://rss.msn.com/en-in/";   // MSN KI FEED
-//    public static final String RSS_LINK = "http://feeds.reuters.com/reuters/topNews"; //reuters ki feed
-//    public static final String RSS_LINK = "http://edition.cnn.com/services/rss/"; // CNN KE RSS SITE HAI, AGEE KE EXTENSIONS DYE HUEN HN FOR AROUND 10 THINGS, PARTY!!!
-//    public static final String  RSS_LINK = "http://www.bbc.com/news/10628494";  // BBC KE HN SARE ISKE ANDAR
-//    public static final String RSS_LINK = "http://news.sky.com/info/rss"; //SKY NEWS KE SARE
-//    public static final String RSS_LINK = "http://www.cbsnews.com/rss/";   //even contains a video section
-//    public static final String RSS_LINK = "http://feeds.abcnews.com/abcnews/topstories";     // abc news whoa
 
 
     public static final String ITEMS = "items";
@@ -51,14 +54,27 @@ public class RssService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "Service started");
-        List<RssItem> rssItems = null;
-        try {
-            PcWorldRssParser parser = new PcWorldRssParser();
-            rssItems = parser.parse(getInputStream(RSS_LINK));
-        } catch (XmlPullParserException e) {
-            Log.w(e.getMessage(), e);
-        } catch (IOException e) {
-            Log.w(e.getMessage(), e);
+        List<RssItem> rssItems = new ArrayList<RssItem>();
+        List<RssItem> temp = null;
+
+        int j = 0;
+        for (int i = 0; i < topStories.length; i++) {
+            try {
+                PcWorldRssParser parser = new PcWorldRssParser();
+                temp = parser.parse(getInputStream(topStories[i]));
+                int l = 2;
+                for (int k = j; k <= j + 3; k++) {
+                    Log.d(TAG,"temp: "+temp.get(l).getTitle());
+                    rssItems.add(k, temp.get(l));
+                    ++l;
+                }
+                ++j;
+
+            } catch (XmlPullParserException e) {
+                Log.w(e.getMessage(), e);
+            } catch (IOException e) {
+                Log.w(e.getMessage(), e);
+            }
         }
         Bundle bundle = new Bundle();
         bundle.putSerializable(ITEMS, (Serializable) rssItems);
